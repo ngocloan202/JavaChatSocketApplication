@@ -9,6 +9,7 @@ import java.io.DataOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -145,10 +146,30 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
     }//GEN-LAST:event_txtPortActionPerformed
 
     private void btnStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStopActionPerformed
+        int confirm = JOptionPane.showConfirmDialog(null, "Do you want to stop chat server?", "Stop Server",
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        if (confirm == 0) {
+            try {
+                if (isConnected && socket != null && !socket.isClosed()) {
+                    output = new DataOutputStream(socket.getOutputStream());
+                    output.writeUTF("Server has disconnected...");
+                    output.flush();
+
+                    socket.close();
+                    serverSocket.close();
+                    isConnected = false;
+
+                    model.addElement("Server stopped. Connection closed.");
+                    lsHistory.setModel(model);
+                }
+            } catch (Exception e) {
+                model.addElement("Error stopping server: " + e.getMessage());
+            }
             btnStart.setEnabled(true);
             txtPort.setEnabled(true);
             btnSend.setEnabled(false);
             btnStop.setEnabled(false);
+        }
     }//GEN-LAST:event_btnStopActionPerformed
 
     private void btnSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendActionPerformed
@@ -257,9 +278,10 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
         try {
             input = new DataInputStream(socket.getInputStream());
             while(true){
+                if (socket != null && !socket.isClosed()) {
                     model.addElement("Client: " + input.readUTF());
                     lsHistory.setModel(model);
-                                        
+                }
                 }
             }
         catch (Exception e) {

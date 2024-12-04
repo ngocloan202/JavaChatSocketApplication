@@ -8,6 +8,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
 import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -143,10 +144,27 @@ public class FrChatClient extends javax.swing.JFrame implements Runnable {
     }//GEN-LAST:event_txtPortActionPerformed
 
     private void btnStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStopActionPerformed
+        try {
+        if (socket != null && !socket.isClosed()) {
+            socket.close();
+        }
+        if (input != null) {
+            input.close();
+        }
+        if (output != null) {
+            output.close();
+        }
+        isConnected = false;
+        model.addElement("Disconnected...");
+        lsHistory.setModel(model);
+
         btnStart.setEnabled(true);
         txtPort.setEnabled(true);
         btnSend.setEnabled(false);
         btnStop.setEnabled(false);
+    } catch (Exception e) {
+        model.addElement("Error stopping client: " + e.getMessage());
+    }
     }//GEN-LAST:event_btnStopActionPerformed
 
     private void btnSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendActionPerformed
@@ -249,10 +267,17 @@ public class FrChatClient extends javax.swing.JFrame implements Runnable {
     public void run() {
         try {
             input = new DataInputStream(socket.getInputStream());
-            while(true){
-                if(socket != null){
+            while (true) {
+                if (socket != null && !socket.isClosed()) {
+                    String message = input.readUTF();
+                    if ("Server has disconnected...".equals(message)) {
+                        model.addElement("Disconnected from server...");
+                        lsHistory.setModel(model);
+                        socket.close();
+                        break;
+                    }
                     model.addElement("Server: " + input.readUTF());
-                    lsHistory.setModel(model);               
+                    lsHistory.setModel(model);
                 }
             }
         } catch (Exception e) {
