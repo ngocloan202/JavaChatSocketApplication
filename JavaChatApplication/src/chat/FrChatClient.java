@@ -46,6 +46,7 @@ public class FrChatClient extends javax.swing.JFrame implements Runnable {
         btnSend = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setLocationByPlatform(true);
 
         txtPort.setText("8888");
         txtPort.addActionListener(new java.awt.event.ActionListener() {
@@ -205,13 +206,13 @@ public class FrChatClient extends javax.swing.JFrame implements Runnable {
             input = new DataInputStream(socket.getInputStream());
             while(true){
                 if(socket != null){
-                    model.addElement("Server: " + input.readUTF());
-                    lsHistory.setModel(model);
                     if(txtMessage.getText() != null)
                         model.addElement(txtMessage.getText());
                         lsHistory.setModel(model);
-                    Thread.sleep(1000);
+                    model.addElement("Server: " + input.readUTF());
+                    lsHistory.setModel(model);
                 }
+                Thread.sleep(1000);
             }
         } catch (Exception e) {
             e.printStackTrace();

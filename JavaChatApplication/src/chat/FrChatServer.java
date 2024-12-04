@@ -12,16 +12,16 @@ import javax.swing.DefaultListModel;
 
 /**
  *
- * @author ASUS
+ * @author THIS PC
  */
-public class FrChatServer extends javax.swing.JFrame implements Runnable{
+public class FrChatServer extends javax.swing.JFrame implements Runnable {
     ServerSocket serverSocket;
     Socket socket;
     DataInputStream input;
     DataOutputStream output;
     DefaultListModel model;
     /**
-     * Creates new form FrChatServer
+     * Creates new form FrChatClient
      */
     public FrChatServer() {
         initComponents();
@@ -37,8 +37,8 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable{
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
         txtPort = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
         btnStart = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -48,10 +48,7 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable{
         btnSend = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(520, 350));
-
-        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jLabel1.setText("PORT NO.");
+        setLocationByPlatform(true);
 
         txtPort.setText("8888");
         txtPort.addActionListener(new java.awt.event.ActionListener() {
@@ -59,6 +56,9 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable{
                 txtPortActionPerformed(evt);
             }
         });
+
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel1.setText("PORT NO.");
 
         btnStart.setText("START");
         btnStart.addActionListener(new java.awt.event.ActionListener() {
@@ -182,6 +182,9 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable{
             java.util.logging.Logger.getLogger(FrChatServer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -209,6 +212,9 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable{
             input = new DataInputStream(socket.getInputStream());
             while(true){
                 if(socket != null){
+                    if(txtMessage.getText() != null)
+                        model.addElement(txtMessage.getText());
+                        lsHistory.setModel(model);
                     model.addElement("Client say: " + input.readUTF());
                     lsHistory.setModel(model);
                     
