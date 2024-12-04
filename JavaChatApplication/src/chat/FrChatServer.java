@@ -20,6 +20,7 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
     DataInputStream input;
     DataOutputStream output;
     DefaultListModel model;
+    private boolean isConnected = false;
     /**
      * Creates new form FrChatClient
      */
@@ -39,13 +40,14 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
 
         txtPort = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
-        btnStart = new javax.swing.JButton();
+        btnStop = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         lsHistory = new javax.swing.JList<>();
         jScrollPane2 = new javax.swing.JScrollPane();
         txtMessage = new javax.swing.JTextArea();
         btnSend = new javax.swing.JButton();
+        btnStart = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setLocationByPlatform(true);
@@ -60,10 +62,10 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel1.setText("PORT NO.");
 
-        btnStart.setText("START");
-        btnStart.addActionListener(new java.awt.event.ActionListener() {
+        btnStop.setText("STOP");
+        btnStop.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnStartActionPerformed(evt);
+                btnStopActionPerformed(evt);
             }
         });
 
@@ -83,6 +85,13 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
             }
         });
 
+        btnStart.setText("START");
+        btnStart.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnStartActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -92,18 +101,20 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 63, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
-                        .addComponent(txtPort, javax.swing.GroupLayout.PREFERRED_SIZE, 344, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnStart, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(txtPort, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnStart, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(11, 11, 11)
+                        .addComponent(btnStop, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 416, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnSend, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(btnSend, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -112,8 +123,9 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
                 .addGap(17, 17, 17)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtPort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnStart)
-                    .addComponent(jLabel1))
+                    .addComponent(btnStop)
+                    .addComponent(jLabel1)
+                    .addComponent(btnStart))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -132,29 +144,62 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtPortActionPerformed
 
-    private void btnStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStartActionPerformed
-        try {
-            model.addElement("Server is connecting ...");
-            lsHistory.setModel(model);
-            serverSocket = new ServerSocket(Integer.parseInt(txtPort.getText()));
-            socket = serverSocket.accept();
-            model.addElement("Server is connected");
-            lsHistory.setModel(model);
-            Thread t = new Thread(FrChatServer.this);
-            t.start();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }//GEN-LAST:event_btnStartActionPerformed
+    private void btnStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStopActionPerformed
+            btnStart.setEnabled(true);
+            txtPort.setEnabled(true);
+            btnSend.setEnabled(false);
+            btnStop.setEnabled(false);
+    }//GEN-LAST:event_btnStopActionPerformed
 
     private void btnSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendActionPerformed
         try {
+            String message = txtMessage.getText();
             output = new DataOutputStream(socket.getOutputStream());
             output.writeUTF(txtMessage.getText());
-            output.flush();
+            output.flush(); 
+            
+            model.addElement("You: " +message);
+            lsHistory.setModel(model);
+            
+            txtMessage.setText("");
         } catch (Exception e) {
+            model.addElement("Error when sending message: " + e.getMessage());
         }
     }//GEN-LAST:event_btnSendActionPerformed
+
+    private void btnStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStartActionPerformed
+        try{
+        if (isConnected) {
+                model.addElement("Already connected!");
+                return;
+            }
+            
+            int port = Integer.parseInt(txtPort.getText().trim());
+            model.addElement("Server is listening on port " + port + "...");
+            lsHistory.setModel(model);
+        
+            serverSocket = new ServerSocket(port);
+            socket = serverSocket.accept();
+            isConnected = true;
+            
+            btnStart.setEnabled(false);
+            txtPort.setEnabled(false);
+            btnSend.setEnabled(true);
+            btnStop.setEnabled(true);
+            
+            model.addElement("Client connected from: " + socket.getInetAddress());
+            lsHistory.setModel(model);
+            Thread t = new Thread(FrChatServer.this);
+            t.start();
+        }catch(NumberFormatException e){
+            model.addElement("Invalid port number!");
+        }
+        catch (Exception e) {
+            model.addElement("Connection error: " + e.getMessage());
+            isConnected = false;
+        }
+       
+    }//GEN-LAST:event_btnStartActionPerformed
 
     /**
      * @param args the command line arguments
@@ -197,6 +242,7 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnSend;
     private javax.swing.JButton btnStart;
+    private javax.swing.JButton btnStop;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
@@ -211,17 +257,14 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
         try {
             input = new DataInputStream(socket.getInputStream());
             while(true){
-                if(socket != null){
-                    if(txtMessage.getText() != null)
-                        model.addElement(txtMessage.getText());
-                        lsHistory.setModel(model);
-                    model.addElement("Client say: " + input.readUTF());
+                    model.addElement("Client: " + input.readUTF());
                     lsHistory.setModel(model);
-                    
+                                        
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        catch (Exception e) {
+            model.addElement("Connection error: " + e.getMessage());
+            lsHistory.setModel(model);
         }
     }
 }
