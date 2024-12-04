@@ -277,13 +277,13 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
     public void run() {
         try {
             input = new DataInputStream(socket.getInputStream());
-            while(true){
+            while (true) {
                 if (socket != null && !socket.isClosed()) {
                     model.addElement("Client: " + input.readUTF());
                     lsHistory.setModel(model);
                 }
-                }
             }
+        }
         catch (Exception e) {
             model.addElement("Connection error: " + e.getMessage());
             lsHistory.setModel(model);

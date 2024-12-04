@@ -276,7 +276,7 @@ public class FrChatClient extends javax.swing.JFrame implements Runnable {
                         socket.close();
                         break;
                     }
-                    model.addElement("Server: " + input.readUTF());
+                    model.addElement("Server: " + message);
                     lsHistory.setModel(model);
                 }
             }
