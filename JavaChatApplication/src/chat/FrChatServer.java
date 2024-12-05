@@ -4,13 +4,19 @@
  */
 package chat;
 
+import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
+import javax.imageio.ImageIO;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 /**
@@ -29,7 +35,7 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
      */
     public FrChatServer() {
         initComponents();
-        setTitleIconImage();
+        setTitleIconImage(); 
         model = new DefaultListModel();
     }
 
@@ -52,6 +58,7 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
         txtMessage = new javax.swing.JTextArea();
         btnSend = new javax.swing.JButton();
         btnStart = new javax.swing.JButton();
+        btnSend1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setLocationByPlatform(true);
@@ -79,10 +86,11 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
         jScrollPane1.setViewportView(lsHistory);
 
         txtMessage.setColumns(20);
-        txtMessage.setRows(3);
+        txtMessage.setRows(2);
         jScrollPane2.setViewportView(txtMessage);
 
-        btnSend.setText("SEND");
+        btnSend.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/send_32px.png"))); // NOI18N
+        btnSend.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnSend.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnSendActionPerformed(evt);
@@ -96,6 +104,15 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
             }
         });
 
+        btnSend1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/file-transfer_32px.png"))); // NOI18N
+        btnSend1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnSend1.setName("btnShareFile"); // NOI18N
+        btnSend1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSend1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -103,23 +120,25 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(txtPort, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnStart, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(11, 11, 11)
-                        .addComponent(btnStop, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 416, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnSend, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                        .addComponent(txtPort, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnStart, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnStop, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(25, 25, 25))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 409, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnSend, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnSend1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -134,10 +153,11 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGap(21, 21, 21)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(btnSend, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane2))
+                    .addComponent(jScrollPane2)
+                    .addComponent(btnSend1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -235,6 +255,10 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
         }
     }//GEN-LAST:event_btnStartActionPerformed
 
+    private void btnSend1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSend1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnSend1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -277,6 +301,7 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnSend;
+    private javax.swing.JButton btnSend1;
     private javax.swing.JButton btnStart;
     private javax.swing.JButton btnStop;
     private javax.swing.JLabel jLabel1;
