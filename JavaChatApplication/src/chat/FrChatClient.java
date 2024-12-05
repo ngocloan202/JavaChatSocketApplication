@@ -9,6 +9,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
 import java.net.URL;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 
@@ -184,12 +186,16 @@ public class FrChatClient extends javax.swing.JFrame implements Runnable {
 
     private void btnSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendActionPerformed
         try {
+            LocalTime currentTime = LocalTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+            String  formattedDate = currentTime.format(formatter);
+            
             String message = txtMessage.getText();
             output = new DataOutputStream(socket.getOutputStream());
-            output.writeUTF(txtMessage.getText());
+            output.writeUTF("(" + formattedDate + "): " + message);
             output.flush();
-            
-            model.addElement("You: " +message);
+
+            model.addElement("You (" + formattedDate + "): " + message);
             lsHistory.setModel(model);
             
             txtMessage.setText("");
@@ -298,7 +304,7 @@ public class FrChatClient extends javax.swing.JFrame implements Runnable {
                         socket.close();
                         break;
                     }
-                    model.addElement("Server: " + message);
+                    model.addElement("Server " + message);
                     lsHistory.setModel(model);
                 }
             }

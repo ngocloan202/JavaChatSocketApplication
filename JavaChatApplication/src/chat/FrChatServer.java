@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import javax.imageio.ImageIO;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
@@ -197,12 +199,16 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
 
     private void btnSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendActionPerformed
         try {
+            LocalTime currentTime = LocalTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+            String formattedDate = currentTime.format(formatter);
+
             String message = txtMessage.getText();
             output = new DataOutputStream(socket.getOutputStream());
-            output.writeUTF(txtMessage.getText());
-            output.flush(); 
-            
-            model.addElement("You: " +message);
+            output.writeUTF("(" + formattedDate + "): " + message);
+            output.flush();
+
+            model.addElement("You (" + formattedDate + "): " + message);
             lsHistory.setModel(model);
             
             txtMessage.setText("");
@@ -319,7 +325,7 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
             input = new DataInputStream(socket.getInputStream());
             while (true) {
                 if (socket != null && !socket.isClosed()) {
-                    model.addElement("Client: " + input.readUTF());
+                    model.addElement("Client " + input.readUTF());
                     lsHistory.setModel(model);
                 }
             }
