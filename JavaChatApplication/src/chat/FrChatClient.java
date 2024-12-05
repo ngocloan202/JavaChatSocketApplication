@@ -4,10 +4,13 @@
  */
 package chat;
 
+import java.awt.Toolkit;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
+import java.net.URL;
 import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -24,6 +27,7 @@ public class FrChatClient extends javax.swing.JFrame implements Runnable {
      */
     public FrChatClient() {
         initComponents();
+        setTitleIconImage();
         model = new DefaultListModel();
     }
 
@@ -143,10 +147,27 @@ public class FrChatClient extends javax.swing.JFrame implements Runnable {
     }//GEN-LAST:event_txtPortActionPerformed
 
     private void btnStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStopActionPerformed
+        try {
+        if (socket != null && !socket.isClosed()) {
+            socket.close();
+        }
+        if (input != null) {
+            input.close();
+        }
+        if (output != null) {
+            output.close();
+        }
+        isConnected = false;
+        model.addElement("Disconnected...");
+        lsHistory.setModel(model);
+
         btnStart.setEnabled(true);
         txtPort.setEnabled(true);
         btnSend.setEnabled(false);
         btnStop.setEnabled(false);
+    } catch (Exception e) {
+        model.addElement("Error stopping client: " + e.getMessage());
+    }
     }//GEN-LAST:event_btnStopActionPerformed
 
     private void btnSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendActionPerformed
@@ -227,7 +248,9 @@ public class FrChatClient extends javax.swing.JFrame implements Runnable {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new FrChatClient().setVisible(true);
+                FrChatClient client = new FrChatClient();
+                client.setVisible(true);
+                client.setLocationRelativeTo(null);
             }
         });
     }
@@ -249,15 +272,27 @@ public class FrChatClient extends javax.swing.JFrame implements Runnable {
     public void run() {
         try {
             input = new DataInputStream(socket.getInputStream());
-            while(true){
-                if(socket != null){
-                    model.addElement("Server: " + input.readUTF());
-                    lsHistory.setModel(model);               
+            while (true) {
+                if (socket != null && !socket.isClosed()) {
+                    String message = input.readUTF();
+                    if ("Server has disconnected...".equals(message)) {
+                        model.addElement("Disconnected from server...");
+                        lsHistory.setModel(model);
+                        socket.close();
+                        break;
+                    }
+                    model.addElement("Server: " + message);
+                    lsHistory.setModel(model);
                 }
             }
         } catch (Exception e) {
             model.addElement("Connection error: " + e.getMessage());
             lsHistory.setModel(model);
         }
+    }
+
+    private void setTitleIconImage() {
+        URL imageURL = getClass().getResource("/images/user_16px.png");
+        setIconImage(Toolkit.getDefaultToolkit().getImage(imageURL));
     }
 }
