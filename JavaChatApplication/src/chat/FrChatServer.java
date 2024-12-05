@@ -4,10 +4,12 @@
  */
 package chat;
 
+import java.awt.Toolkit;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URL;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 
@@ -27,6 +29,7 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
      */
     public FrChatServer() {
         initComponents();
+        setTitleIconImage();
         model = new DefaultListModel();
     }
 
@@ -190,7 +193,7 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
 
     private void btnStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStartActionPerformed
         try{
-        if (isConnected) {
+            if (isConnected) {
                 model.addElement("Already connected!");
                 return;
             }
@@ -198,28 +201,38 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
             int port = Integer.parseInt(txtPort.getText().trim());
             model.addElement("Server is listening on port " + port + "...");
             lsHistory.setModel(model);
-        
-            serverSocket = new ServerSocket(port);
-            socket = serverSocket.accept();
-            isConnected = true;
             
+            serverSocket = new ServerSocket(port);
+            
+            Thread connectionThread = new Thread(() -> {
+                try {
+                    while (!serverSocket.isClosed()) {
+                    socket = serverSocket.accept();
+                    isConnected = true;
+
+                    model.addElement("Client connected from: " + socket.getInetAddress());
+                    lsHistory.setModel(model);
+
+                    Thread clientHandler = new Thread(FrChatServer.this);
+                    clientHandler.start();
+                }
+                } catch (Exception e) {
+                    model.addElement("Error accepting client connection: " + e.getMessage());
+                    lsHistory.setModel(model);
+                }
+            });
+            connectionThread.start();
+
             btnStart.setEnabled(false);
             txtPort.setEnabled(false);
             btnSend.setEnabled(true);
             btnStop.setEnabled(true);
-            
-            model.addElement("Client connected from: " + socket.getInetAddress());
-            lsHistory.setModel(model);
-            Thread t = new Thread(FrChatServer.this);
-            t.start();
-        }catch(NumberFormatException e){
+        } catch (NumberFormatException e) {
             model.addElement("Invalid port number!");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             model.addElement("Connection error: " + e.getMessage());
             isConnected = false;
         }
-       
     }//GEN-LAST:event_btnStartActionPerformed
 
     /**
@@ -255,7 +268,9 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new FrChatServer().setVisible(true);
+                FrChatServer server = new FrChatServer();
+                server.setVisible(true);
+                server.setLocationRelativeTo(null);
             }
         });
     }
@@ -288,5 +303,10 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
             model.addElement("Connection error: " + e.getMessage());
             lsHistory.setModel(model);
         }
+    }
+
+    private void setTitleIconImage() {
+        URL imageURL = getClass().getResource("/images/manager_16px.png");
+        setIconImage(Toolkit.getDefaultToolkit().getImage(imageURL));
     }
 }

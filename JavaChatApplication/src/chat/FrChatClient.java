@@ -4,9 +4,11 @@
  */
 package chat;
 
+import java.awt.Toolkit;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
+import java.net.URL;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 
@@ -25,6 +27,7 @@ public class FrChatClient extends javax.swing.JFrame implements Runnable {
      */
     public FrChatClient() {
         initComponents();
+        setTitleIconImage();
         model = new DefaultListModel();
     }
 
@@ -245,7 +248,9 @@ public class FrChatClient extends javax.swing.JFrame implements Runnable {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new FrChatClient().setVisible(true);
+                FrChatClient client = new FrChatClient();
+                client.setVisible(true);
+                client.setLocationRelativeTo(null);
             }
         });
     }
@@ -284,5 +289,10 @@ public class FrChatClient extends javax.swing.JFrame implements Runnable {
             model.addElement("Connection error: " + e.getMessage());
             lsHistory.setModel(model);
         }
+    }
+
+    private void setTitleIconImage() {
+        URL imageURL = getClass().getResource("/images/user_16px.png");
+        setIconImage(Toolkit.getDefaultToolkit().getImage(imageURL));
     }
 }
