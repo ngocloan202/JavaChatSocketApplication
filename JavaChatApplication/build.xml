@@ -10,6 +10,35 @@
 <project name="JavaChatApplication" default="default" basedir=".">
     <description>Builds, tests, and runs the project JavaChatApplication.</description>
     <import file="nbproject/build-impl.xml"/>
+        <target name="package-all" depends="package-server, package-client" />
+
+    <!-- Target to build the server JAR -->
+    <target name="package-server" depends="compile">
+        <jar destfile="${dist.dir}/JavaChatServer.jar" basedir="${build.classes.dir}">
+            <manifest>
+                <attribute name="Main-Class" value="chat.FrChatServer"/>
+            </manifest>
+            <fileset dir="${build.classes.dir}"/>
+            <!-- Include resources if needed -->
+            <fileset dir="${src.dir}">
+                <include name="images/**"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <!-- Target to build the client JAR -->
+    <target name="package-client" depends="compile">
+        <jar destfile="${dist.dir}/JavaChatClient.jar" basedir="${build.classes.dir}">
+            <manifest>
+                <attribute name="Main-Class" value="chat.FrChatClient"/>
+            </manifest>
+            <fileset dir="${build.classes.dir}"/>
+            <!-- Include resources if needed -->
+            <fileset dir="${src.dir}">
+                <include name="images/**"/>
+            </fileset>
+        </jar>
+    </target>
     <!--
 
     There exist several targets which are by default empty and which can be 
