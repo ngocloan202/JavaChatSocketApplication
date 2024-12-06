@@ -68,6 +68,7 @@ public class FrChatClient extends javax.swing.JFrame implements Runnable {
         jLabel1.setText("PORT NO.");
 
         btnStop.setText("STOP");
+        btnStop.setEnabled(false);
         btnStop.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnStopActionPerformed(evt);
@@ -162,35 +163,39 @@ public class FrChatClient extends javax.swing.JFrame implements Runnable {
 
     private void btnStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStopActionPerformed
         try {
-        if (socket != null && !socket.isClosed()) {
-            socket.close();
-        }
-        if (input != null) {
-            input.close();
-        }
-        if (output != null) {
-            output.close();
-        }
-        isConnected = false;
-        model.addElement("Disconnected...");
-        lsHistory.setModel(model);
+            if (socket != null && !socket.isClosed()) {
+                socket.close();
+            }
+            if (input != null) {
+                input.close();
+            }
+            if (output != null) {
+                output.close();
+            }
+            isConnected = false;
+            model.addElement("Disconnected...");
+            lsHistory.setModel(model);
 
-        btnStart.setEnabled(true);
-        txtPort.setEnabled(true);
-        btnSend.setEnabled(false);
-        btnStop.setEnabled(false);
-    } catch (Exception e) {
-        model.addElement("Error stopping client: " + e.getMessage());
-    }
+            btnStart.setEnabled(true);
+            txtPort.setEnabled(true);
+            btnSend.setEnabled(false);
+            btnStop.setEnabled(false);
+        } catch (Exception e) {
+            model.addElement("Error stopping client: " + e.getMessage());
+        }
     }//GEN-LAST:event_btnStopActionPerformed
 
     private void btnSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendActionPerformed
         try {
+            String message = txtMessage.getText();
+            
+            if(message.isEmpty())
+                return;
+            
             LocalTime currentTime = LocalTime.now();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
             String  formattedDate = currentTime.format(formatter);
             
-            String message = txtMessage.getText();
             output = new DataOutputStream(socket.getOutputStream());
             output.writeUTF("(" + formattedDate + "): " + message);
             output.flush();
@@ -273,6 +278,7 @@ public class FrChatClient extends javax.swing.JFrame implements Runnable {
                 FrChatClient client = new FrChatClient();
                 client.setVisible(true);
                 client.setLocationRelativeTo(null);
+                client.setTitle("Client Chat Interface");
             }
         });
     }
