@@ -1,6 +1,13 @@
 # JavaChatSocketApplication
 
 🚀 How to Run
+### Method 1 ###
+- We can easily launch the application using the JAR file.
+- Follow the path below: JavaChatApplication/src/production/....
+- Click on these two files to launch the Client and Server interfaces.
+- Then, proceed to exchange messages between the Client and Server."
+
+### Method 2 ###
 1. Set up the server
 Open the FrChatServer.java file.
 Run the that file: The server listens for incoming client connections on a specified port.
