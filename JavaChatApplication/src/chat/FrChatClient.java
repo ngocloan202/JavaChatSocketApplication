@@ -7,13 +7,15 @@ package chat;
 import java.awt.Toolkit;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.net.Socket;
 import java.net.URL;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import javax.swing.DefaultListModel;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-
+import fileTranfer.FileTransfer;
 /**
  *
  * @author THIS PC
@@ -24,6 +26,7 @@ public class FrChatClient extends javax.swing.JFrame implements Runnable {
     DataInputStream input;
     DefaultListModel model; 
     private boolean isConnected = false;
+    private File fileToSend;
     /**
      * Creates new form FrChatClient
      */
@@ -52,7 +55,7 @@ public class FrChatClient extends javax.swing.JFrame implements Runnable {
         txtMessage = new javax.swing.JTextArea();
         btnSend = new javax.swing.JButton();
         btnStart = new javax.swing.JButton();
-        btnSend1 = new javax.swing.JButton();
+        btnSendFile = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setLocationByPlatform(true);
@@ -97,11 +100,11 @@ public class FrChatClient extends javax.swing.JFrame implements Runnable {
             }
         });
 
-        btnSend1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/file-transfer_32px.png"))); // NOI18N
-        btnSend1.setName("btnShareFile"); // NOI18N
-        btnSend1.addActionListener(new java.awt.event.ActionListener() {
+        btnSendFile.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/attachment.png"))); // NOI18N
+        btnSendFile.setName("btnShareFile"); // NOI18N
+        btnSendFile.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSend1ActionPerformed(evt);
+                btnSendFileActionPerformed(evt);
             }
         });
 
@@ -116,20 +119,18 @@ public class FrChatClient extends javax.swing.JFrame implements Runnable {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtPort)
+                        .addComponent(txtPort, javax.swing.GroupLayout.PREFERRED_SIZE, 261, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(btnStart, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(11, 11, 11)
                         .addComponent(btnStop, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jLabel2)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 416, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnSend, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnSend1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnSendFile, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -147,10 +148,10 @@ public class FrChatClient extends javax.swing.JFrame implements Runnable {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnSend, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnSend1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(btnSendFile, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2))
+                .addContainerGap())
         );
 
         pack();
@@ -236,9 +237,23 @@ public class FrChatClient extends javax.swing.JFrame implements Runnable {
         }
     }//GEN-LAST:event_btnStartActionPerformed
 
-    private void btnSend1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSend1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnSend1ActionPerformed
+    private void btnSendFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendFileActionPerformed
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Choose a file to send");
+        if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+            fileToSend = fileChooser.getSelectedFile();
+            try {
+                if(output == null){
+                    output = new DataOutputStream(socket.getOutputStream());
+                }
+                FileTransfer.sendFile(output, fileToSend);
+                model.addElement("You sent a file: " + fileToSend.getName());
+                lsHistory.setModel(model);
+            } catch (Exception e) {
+                model.addElement("Error sending file: " + e.getMessage());
+            }
+        }
+    }//GEN-LAST:event_btnSendFileActionPerformed
 
     /**
      * @param args the command line arguments
@@ -279,7 +294,7 @@ public class FrChatClient extends javax.swing.JFrame implements Runnable {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnSend;
-    private javax.swing.JButton btnSend1;
+    private javax.swing.JButton btnSendFile;
     private javax.swing.JButton btnStart;
     private javax.swing.JButton btnStop;
     private javax.swing.JLabel jLabel1;
@@ -303,6 +318,46 @@ public class FrChatClient extends javax.swing.JFrame implements Runnable {
                         lsHistory.setModel(model);
                         socket.close();
                         break;
+                    }
+
+                    if ("IS SHARING FILE...".equals(message)) {
+                        model.addElement("Server " + message);
+                        lsHistory.setModel(model);
+                    
+                        int confirm = JOptionPane.showConfirmDialog(null,
+                                "Do you want to download this file?", "Send File",
+                                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+                        if (confirm == JOptionPane.YES_OPTION) {
+                            JFileChooser directoryChooser = new JFileChooser();
+                            directoryChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+                            if (directoryChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+                                FileTransfer.receiveFile(input, directoryChooser.getSelectedFile().getAbsolutePath());
+                                model.addElement("File received successfully.");
+                            }
+                            else {
+                                model.addElement("File transfer cancelled.");
+                                
+                                input.readUTF();
+                                long size = input.readLong();
+                                while (size > 0) {
+                                    long skipped = input.skip(size);
+                                    size -= skipped;
+                                }
+                            }
+                        }
+                        else {
+                           model.addElement("File transfer cancelled.");
+                           input.readUTF();
+                           long size = input.readLong();
+                            while (size > 0) {
+                                long skipped = input.skip(size);
+                                size -= skipped;
+                            }
+                        } 
+                        lsHistory.setModel(model);
+                        continue;
                     }
                     model.addElement("Server " + message);
                     lsHistory.setModel(model);
