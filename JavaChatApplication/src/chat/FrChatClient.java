@@ -243,6 +243,9 @@ public class FrChatClient extends javax.swing.JFrame implements Runnable {
         if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
             fileToSend = fileChooser.getSelectedFile();
             try {
+                if(output == null){
+                    output = new DataOutputStream(socket.getOutputStream());
+                }
                 FileTransfer.sendFile(output, fileToSend);
                 model.addElement("You sent a file: " + fileToSend.getName());
                 lsHistory.setModel(model);
@@ -320,6 +323,7 @@ public class FrChatClient extends javax.swing.JFrame implements Runnable {
                     if ("IS SHARING FILE...".equals(message)) {
                         model.addElement("Server " + message);
                         lsHistory.setModel(model);
+                    
                         int confirm = JOptionPane.showConfirmDialog(null,
                                 "Do you want to download this file?", "Send File",
                                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
@@ -331,16 +335,31 @@ public class FrChatClient extends javax.swing.JFrame implements Runnable {
                             if (directoryChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
                                 FileTransfer.receiveFile(input, directoryChooser.getSelectedFile().getAbsolutePath());
                                 model.addElement("File received successfully.");
-                            } else {
-                                model.addElement("File transfer cancelled.");
                             }
-                        } else {
-                            model.addElement("File transfer declined or Client is disconnected");
+                            else {
+                                model.addElement("File transfer cancelled.");
+                                
+                                input.readUTF();
+                                long size = input.readLong();
+                                while (size > 0) {
+                                    long skipped = input.skip(size);
+                                    size -= skipped;
+                                }
+                            }
                         }
-
-                    } else {
-                        model.addElement("Server " + message);
+                        else {
+                           model.addElement("File transfer cancelled.");
+                           input.readUTF();
+                           long size = input.readLong();
+                            while (size > 0) {
+                                long skipped = input.skip(size);
+                                size -= skipped;
+                            }
+                        } 
+                        lsHistory.setModel(model);
+                        continue;
                     }
+                    model.addElement("Server " + message);
                     lsHistory.setModel(model);
                 }
             }

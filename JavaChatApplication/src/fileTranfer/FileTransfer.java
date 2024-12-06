@@ -21,10 +21,14 @@ public class FileTransfer {
         FileInputStream fileInputStream = new FileInputStream(fileToSend);
         String fileName = fileToSend.getName();
         long fileSize = fileToSend.length();
+        
         output.writeUTF("IS SHARING FILE...");
         output.flush();
+        
         output.writeUTF(fileName);
         output.writeLong(fileSize);
+        output.flush();
+        
 
         byte[] buffer = new byte[4 * 1024];
         int bytesRead;
@@ -36,7 +40,7 @@ public class FileTransfer {
     }
 
     public static void receiveFile(DataInputStream input, String saveDirectory) throws IOException {
-        String fileName = input.readUTF();
+        String fileName = input.readUTF(); 
         long fileSize = input.readLong();
 
         File outputFile = new File(saveDirectory, fileName);
