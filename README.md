@@ -12,13 +12,13 @@ You can download the **JavaChatSocketApplication** repository using two methods:
 1. Ensure Git is installed on your system. You can check by running:  
    ```bash
    git --version
-    if not installed, download git here: https://git-scm.com/downloads
-    ```
+   ```
+   if not installed, download git here: https://git-scm.com/downloads
     
 2. Clone the repository:
     ```bash
+     git clone https://github.com/ngocloan202/JavaChatSocketApplication.git
     ```
-    git clone https://github.com/ngocloan202/JavaChatSocketApplication.git
 
 3. Navigate to the project folder:
     ```bash
