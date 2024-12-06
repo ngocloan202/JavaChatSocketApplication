@@ -13,7 +13,7 @@ You can download the **JavaChatSocketApplication** repository using two methods:
    ```bash
    git --version
    ```
-   if not installed, download git here: https://git-scm.com/downloads
+   if not installed, download git here: [Git](https://git-scm.com/downloads)
     
 2. Clone the repository:
     ```bash
@@ -47,5 +47,5 @@ If you prefer not to use Git, you can download the project directly as a ZIP fil
 
 ### 🛠️ Prerequisites
 Before running the application, make sure you have the following installed:
-    - Java JDK 8 or later: Download from Oracle: https://www.oracle.com/java/technologies/downloads/.
-    - IDE: IntelliJ IDEA, Eclipse, or any Java-supporting IDE to run the application.
+Java JDK 8 or later: Download from [Oracle](https://www.oracle.com/java/technologies/downloads/).
+IDE: IntelliJ IDEA, Eclipse, Netbeans or any Java-supporting IDE to run the application.
