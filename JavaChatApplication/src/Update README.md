@@ -10,12 +10,12 @@
 ### Method 2 ###
 1. Set up the server
 Open the FrChatServer.java file.
-Run the that file: The server listens for incoming client connections on a specified port.
+Run this file: The server listens for incoming client connections on a specified port.
 By default, the server listens on port 8888
 
 2. Set up the client
 Open the FrChatClient.java file.
-Run the Client: After starting the server, run the client. The client will connect to the server (by default to localhost on port 8888)
+Run this file: After starting the server, run the client. The client will connect to the server (by default to localhost on port 8888)
 
 3. Chat between client and server
 Once both the server and client are running, you can start sending and receiving messages.
