@@ -79,6 +79,7 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
         jLabel1.setText("PORT NO.");
 
         btnStop.setText("STOP");
+        btnStop.setEnabled(false);
         btnStop.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnStopActionPerformed(evt);
@@ -202,11 +203,15 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
 
     private void btnSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendActionPerformed
         try {
+            String message = txtMessage.getText();
+            
+            if(message.isEmpty())
+                return;
+            
             LocalTime currentTime = LocalTime.now();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
             String formattedDate = currentTime.format(formatter);
 
-            String message = txtMessage.getText();
             output = new DataOutputStream(socket.getOutputStream());
             output.writeUTF("(" + formattedDate + "): " + message);
             output.flush();
@@ -318,6 +323,7 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
                 FrChatServer server = new FrChatServer();
                 server.setVisible(true);
                 server.setLocationRelativeTo(null);
+                server.setTitle("Server Chat Interface");
             }
         });
     }
