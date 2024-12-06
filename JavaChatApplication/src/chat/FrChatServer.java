@@ -4,6 +4,7 @@
  */
 package chat;
 
+import fileTranfer.FileTransfer;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
@@ -19,6 +20,7 @@ import java.time.format.DateTimeFormatter;
 import javax.imageio.ImageIO;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 /**
@@ -32,6 +34,7 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
     DataOutputStream output;
     DefaultListModel model;
     private boolean isConnected = false;
+    private File fileToSend;
     /**
      * Creates new form FrChatClient
      */
@@ -60,7 +63,7 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
         txtMessage = new javax.swing.JTextArea();
         btnSend = new javax.swing.JButton();
         btnStart = new javax.swing.JButton();
-        btnSend1 = new javax.swing.JButton();
+        btnSendFile = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setLocationByPlatform(true);
@@ -106,12 +109,12 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
             }
         });
 
-        btnSend1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/file-transfer_32px.png"))); // NOI18N
-        btnSend1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnSend1.setName("btnShareFile"); // NOI18N
-        btnSend1.addActionListener(new java.awt.event.ActionListener() {
+        btnSendFile.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/attachment.png"))); // NOI18N
+        btnSendFile.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnSendFile.setName("btnShareFile"); // NOI18N
+        btnSendFile.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSend1ActionPerformed(evt);
+                btnSendFileActionPerformed(evt);
             }
         });
 
@@ -122,25 +125,25 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtPort, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(txtPort, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
                         .addComponent(btnStart, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(14, 14, 14)
+                        .addComponent(btnStop, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 415, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnStop, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(25, 25, 25))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 409, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnSend, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnSend1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                        .addComponent(btnSend, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnSendFile, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -159,7 +162,7 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(btnSend, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jScrollPane2)
-                    .addComponent(btnSend1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(btnSendFile, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -261,9 +264,20 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
         }
     }//GEN-LAST:event_btnStartActionPerformed
 
-    private void btnSend1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSend1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnSend1ActionPerformed
+    private void btnSendFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendFileActionPerformed
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Choose a file to send");
+        if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+            fileToSend = fileChooser.getSelectedFile();
+            try {
+                FileTransfer.sendFile(output, fileToSend);
+                model.addElement("You sent a file: " + fileToSend.getName());
+                lsHistory.setModel(model);
+            } catch (Exception e) {
+                model.addElement("Error sending file: " + e.getMessage());
+            }
+        }
+    }//GEN-LAST:event_btnSendFileActionPerformed
 
     /**
      * @param args the command line arguments
@@ -307,7 +321,7 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnSend;
-    private javax.swing.JButton btnSend1;
+    private javax.swing.JButton btnSendFile;
     private javax.swing.JButton btnStart;
     private javax.swing.JButton btnStop;
     private javax.swing.JLabel jLabel1;
@@ -325,7 +339,24 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
             input = new DataInputStream(socket.getInputStream());
             while (true) {
                 if (socket != null && !socket.isClosed()) {
-                    model.addElement("Client " + input.readUTF());
+                    String message = input.readUTF();
+                    if (" IS SHARING FILE...".equals(message)) {
+                        int confirm = JOptionPane.showConfirmDialog(null,
+                                "Do you want to download this file?", "Send File",
+                                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                        if (confirm == JOptionPane.YES_OPTION) {
+                            JFileChooser directoryChooser = new JFileChooser();
+                            directoryChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                            if(directoryChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION){
+                                FileTransfer.receiveFile(input, directoryChooser.getSelectedFile().getAbsolutePath());
+                                model.addElement("File received successfully.");
+                            } else {
+                            model.addElement("File transfer declined or Client is disconnected");
+                            }
+                        }
+                        lsHistory.setModel(model);
+                    }
+                    model.addElement("Client " + message);
                     lsHistory.setModel(model);
                 }
             }
