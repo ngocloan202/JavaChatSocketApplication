@@ -161,8 +161,8 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
                 .addGap(21, 21, 21)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(btnSend, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane2)
-                    .addComponent(btnSendFile, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(btnSendFile, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -340,24 +340,30 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
             while (true) {
                 if (socket != null && !socket.isClosed()) {
                     String message = input.readUTF();
-                    if (" IS SHARING FILE...".equals(message)) {
+                    if ("IS SHARING FILE...".equals(message)) {
+                        model.addElement("Client " + message);
+                        lsHistory.setModel(model);
                         int confirm = JOptionPane.showConfirmDialog(null,
                                 "Do you want to download this file?", "Send File",
                                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                        
                         if (confirm == JOptionPane.YES_OPTION) {
                             JFileChooser directoryChooser = new JFileChooser();
                             directoryChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                            
                             if(directoryChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION){
                                 FileTransfer.receiveFile(input, directoryChooser.getSelectedFile().getAbsolutePath());
                                 model.addElement("File received successfully.");
-                            } else {
-                            model.addElement("File transfer declined or Client is disconnected");
+                            } 
+                            else {
+                            model.addElement("File transfer cancelled.");
                             }
+                        }
+                        else {
+                        model.addElement("File transfer declined or Client is disconnected");
                         }
                         lsHistory.setModel(model);
                     }
-                    model.addElement("Client " + message);
-                    lsHistory.setModel(model);
                 }
             }
         }
