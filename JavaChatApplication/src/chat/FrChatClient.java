@@ -318,30 +318,29 @@ public class FrChatClient extends javax.swing.JFrame implements Runnable {
                     }
 
                     if ("IS SHARING FILE...".equals(message)) {
-                        model.addElement("Client " + message);
+                        model.addElement("Server " + message);
                         lsHistory.setModel(model);
                         int confirm = JOptionPane.showConfirmDialog(null,
                                 "Do you want to download this file?", "Send File",
                                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                        
+
                         if (confirm == JOptionPane.YES_OPTION) {
                             JFileChooser directoryChooser = new JFileChooser();
                             directoryChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-                            
-                            if(directoryChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION){
+
+                            if (directoryChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
                                 FileTransfer.receiveFile(input, directoryChooser.getSelectedFile().getAbsolutePath());
                                 model.addElement("File received successfully.");
-                            }  
-                            else {
-                            model.addElement("File transfer cancelled.");
+                            } else {
+                                model.addElement("File transfer cancelled.");
                             }
+                        } else {
+                            model.addElement("File transfer declined or Client is disconnected");
                         }
-                        else {
-                        model.addElement("File transfer declined or Client is disconnected"); 
-                        }
-                        lsHistory.setModel(model);
+
+                    } else {
+                        model.addElement("Server " + message);
                     }
-                    model.addElement("Server " + message);
                     lsHistory.setModel(model);
                 }
             }

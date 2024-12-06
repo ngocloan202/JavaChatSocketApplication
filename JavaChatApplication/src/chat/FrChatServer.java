@@ -346,28 +346,27 @@ public class FrChatServer extends javax.swing.JFrame implements Runnable {
                         int confirm = JOptionPane.showConfirmDialog(null,
                                 "Do you want to download this file?", "Send File",
                                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                        
+
                         if (confirm == JOptionPane.YES_OPTION) {
                             JFileChooser directoryChooser = new JFileChooser();
                             directoryChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-                            
-                            if(directoryChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION){
+
+                            if (directoryChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
                                 FileTransfer.receiveFile(input, directoryChooser.getSelectedFile().getAbsolutePath());
                                 model.addElement("File received successfully.");
-                            } 
-                            else {
-                            model.addElement("File transfer cancelled.");
+                            } else {
+                                model.addElement("File transfer cancelled.");
                             }
+                        } else {
+                            model.addElement("File transfer declined or Client is disconnected");
                         }
-                        else {
-                        model.addElement("File transfer declined or Client is disconnected");
-                        }
-                        lsHistory.setModel(model);
+                    } else {
+                        model.addElement("Client " + message);
                     }
+                    lsHistory.setModel(model);
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             model.addElement("Connection error: " + e.getMessage());
             lsHistory.setModel(model);
         }
