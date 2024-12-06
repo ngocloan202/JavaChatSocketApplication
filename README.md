@@ -47,6 +47,5 @@ If you prefer not to use Git, you can download the project directly as a ZIP fil
 
 ### 🛠️ Prerequisites
 Before running the application, make sure you have the following installed:
-    Java JDK 8 or later: Download from Oracle: 
-        https://www.oracle.com/java/technologies/downloads/.
-    IDE: IntelliJ IDEA, Eclipse, or any Java-supporting IDE to run the application.
+    - Java JDK 8 or later: Download from Oracle: https://www.oracle.com/java/technologies/downloads/.
+    - IDE: IntelliJ IDEA, Eclipse, or any Java-supporting IDE to run the application.
